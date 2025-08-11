@@ -1,24 +1,710 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accede a mi PDF</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hotel - Dashboard Servicios (Mejorado)</title>
+
+  <!-- =========================
+       CSS: ULTRA MEJORADO (LARGO)
+       ========================= -->
+  <style>
+  /* ==========================================================================
+     00 - VARIABLES GLOBALES (Cambiar aquí TODO)
+     ========================================================================== */
+  :root{
+    /* Colores principales (light) */
+    --bg-1: #f6fafc;
+    --bg-2: #eef4fa;
+    --surface: #ffffff;
+    --glass: rgba(255,255,255,0.06);
+    --text: #20303b;
+    --muted: #6f7d8a;
+    --accent-1: #6f88a6;
+    --accent-2: #50637e;
+    --accent-3: #9cc4d8;
+    --success: #24b36b;
+    --danger: #e05252;
+
+    /* Spacing & sizing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.4rem;
+
+    /* Radius */
+    --r-sm: 6px;
+    --r-md: 12px;
+    --r-lg: 18px;
+    --r-pill: 999px;
+
+    /* Typo */
+    --font-system: "Inter", "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    --fs-base: clamp(0.95rem, 1.02vw + 0.6rem, 1.05rem);
+    --fs-sm: clamp(0.8rem, 0.8vw + 0.55rem, 0.9rem);
+    --fs-lg: clamp(1.15rem, 1.4vw + 0.6rem, 1.3rem);
+
+    /* Elevation / sombras */
+    --shadow-1: 0 6px 18px rgba(33,40,50,0.06);
+    --shadow-2: 0 18px 48px rgba(33,40,50,0.10);
+    --glass-border: rgba(255,255,255,0.06);
+
+    /* animaciones */
+    --anim-fast: 180ms cubic-bezier(.2,.9,.3,1);
+    --anim-mid: 320ms cubic-bezier(.2,.9,.3,1);
+    --anim-slow: 700ms cubic-bezier(.2,.9,.3,1);
+
+    /* grid */
+    --container-max: 1400px;
+  }
+
+  /* Dark theme (prefers or manual) */
+  @media (prefers-color-scheme: dark) {
+    :root{
+      --bg-1: #0e1720;
+      --bg-2: #121821;
+      --surface: rgba(26,30,36,0.9);
+      --glass: rgba(255,255,255,0.03);
+      --text: #e6eef7;
+      --muted: #9aa9bd;
+      --accent-1: #95b7d6;
+      --accent-2: #7fa2c0;
+      --shadow-1: 0 6px 18px rgba(0,0,0,0.55);
+      --shadow-2: 0 28px 60px rgba(0,0,0,0.65);
+      --glass-border: rgba(255,255,255,0.04);
+    }
+  }
+
+  /* Clase manual para forzar modo oscuro */
+  .dark-theme {
+    color-scheme: dark;
+    --bg-1: #0e1720;
+    --bg-2: #121821;
+    --surface: rgba(22,26,30,0.95);
+    --glass: rgba(255,255,255,0.02);
+    --text: #e6eef7;
+    --muted: #a9b4c4;
+  }
+
+  /* ==========================================================================
+     01 - RESET MINIMO Y BASES
+     ========================================================================== */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body{
+    margin:0;
+    font-family: var(--font-system);
+    font-size: var(--fs-base);
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height: 1.45;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  img{ max-width:100%; display:block; height:auto; }
+
+  a{ color:inherit; text-decoration:none; }
+  button{ font:inherit; cursor:pointer; border:0; background:none; }
+
+  /* reduce motion */
+  @media (prefers-reduced-motion: reduce){
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+
+  /* ==========================================================================
+     02 - UTILIDADES COMUNES (muchas)
+     ========================================================================== */
+  .container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 1.6rem;
+  }
+
+  .center { display:flex; align-items:center; justify-content:center; }
+  .stack { display:flex; flex-direction:column; gap: var(--space-md); }
+  .row { display:flex; gap: var(--space-md); align-items:center; }
+
+  .sr-only{ position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+  /* responsive helpers */
+  .hide-sm { display:none; }
+  @media (min-width: 801px){ .hide-sm{ display:initial } }
+
+  /* ==========================================================================
+     03 - HEADER (glass, decor y controles)
+     ========================================================================== */
+  header.header {
+    position: relative;
+    padding: 1.8rem 1rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    box-shadow: var(--shadow-1);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .header__inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 1rem;
+    flex-wrap:wrap;
+  }
+
+  .brand {
+    display:flex;
+    gap:.9rem;
+    align-items:center;
+  }
+
+  .brand .logo {
+    width:44px; height:44px; border-radius:10px;
+    background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+    display:grid; place-items:center; color:#fff; font-weight:700;
+    box-shadow: 0 6px 18px rgba(80,110,160,0.14);
+  }
+  .brand h1{ margin:0; font-size: clamp(1.2rem, 2.3vw, 2rem); letter-spacing: .6px; }
+
+  .controls {
+    display:flex;
+    gap: .6rem;
+    align-items:center;
+  }
+
+  .time {
+    font-style: italic;
+    color: var(--muted);
+    padding: .4rem .9rem;
+    border-radius: var(--r-pill);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    min-width:92px;
+    text-align:center;
+  }
+
+  /* theme toggle */
+  .theme-toggle {
+    width:46px; height:46px; border-radius:12px;
+    display:inline-grid; place-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02));
+    border:1px solid rgba(0,0,0,0.06);
+    box-shadow: var(--shadow-1);
+    transition: transform var(--anim-mid), box-shadow var(--anim-mid);
+  }
+  .theme-toggle:active{ transform: scale(.98) }
+  .theme-toggle[aria-pressed="true"]{ box-shadow: 0 10px 30px rgba(80,110,160,0.12); }
+
+  /* decorative floating shapes in header (pseudo elements) */
+  header.header::before,
+  header.header::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: overlay;
+    filter: blur(28px) saturate(120%);
+    opacity: .18;
+  }
+  header.header::before {
+    width:420px; height:420px; right:-10%; top:-30%;
+    background: radial-gradient(circle at 30% 30%, var(--accent-3), transparent 40%);
+    transform: rotate(12deg);
+  }
+  header.header::after {
+    width:360px; height:360px; left:-8%; bottom:-20%;
+    background: radial-gradient(circle at 70% 70%, var(--accent-2), transparent 35%);
+  }
+
+  /* ==========================================================================
+     04 - GRID AVANZADO DE TARJETAS (12 columnas con utilidades)
+     ========================================================================== */
+  main.grid {
+    display:grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.1rem;
+    max-width: var(--container-max);
+    margin: 1.6rem auto;
+    padding: 0 1.6rem;
+  }
+
+  /* tamaños: span utilities */
+  .col-span-12 { grid-column: span 12; }
+  .col-span-6  { grid-column: span 6; }
+  .col-span-4  { grid-column: span 4; }
+  .col-span-3  { grid-column: span 3; }
+
+  @media (max-width: 1100px){
+    .col-span-6, .col-span-4, .col-span-3 { grid-column: span 12; }
+  }
+
+  /* ==========================================================================
+     05 - CARD / TILE (capas, glass, neumorphism y accesibilidad)
+     ========================================================================== */
+  .card {
+    position: relative;
+    background: var(--surface);
+    border-radius: var(--r-lg);
+    padding: 1.2rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    transition: transform var(--anim-mid), box-shadow var(--anim-mid);
+    will-change: transform;
+    display:flex;
+    flex-direction:column;
+    gap: .8rem;
+    min-height: 150px;
+  }
+
+  /* reveal animation initial state (JS toggles class .is-visible) */
+  .card { opacity: 0; transform: translateY(18px) scale(.995); }
+  .card.is-visible { opacity:1; transform: none; transition-delay: 0s; }
+
+  /* hover & focus interactions */
+  @media (hover: hover) and (pointer: fine){
+    .card:hover{ transform: translateY(-8px) scale(1.01); box-shadow: var(--shadow-2); }
+  }
+  .card:focus-within{ box-shadow: 0 10px 30px rgba(80,110,160,0.10); outline: none; }
+
+  /* inner glass layer for sheen */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    mix-blend-mode: screen;
+    border-radius: var(--r-lg);
+  }
+
+  /* accent stripe (left) */
+  .card .accent {
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:8px;
+    background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+    border-top-left-radius: var(--r-lg);
+    border-bottom-left-radius: var(--r-lg);
+    opacity: .98;
+  }
+
+  /* card content layout */
+  .card-head { display:flex; gap: .9rem; align-items:center; justify-content:space-between; z-index:2; }
+  .card-media { display:block; margin: 0 auto; width: 100%; max-width: 360px; border-radius: var(--r-md); overflow:hidden; }
+  .card-media img{ display:block; width:100%; height:auto; object-fit:cover; transition: transform var(--anim-mid); }
+  .card-body { padding-top: .2rem; z-index:2; text-align:center; }
+
+  .card h3 { margin:0; font-size: 1.12rem; color:var(--text); }
+  .card p { margin:.5rem 0 0; color: var(--muted); font-size: var(--fs-sm); }
+
+  /* actions row */
+  .actions { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin-top:.8rem; z-index:2; }
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:.5rem; padding:.6rem .9rem; border-radius:10px; font-weight:700; letter-spacing:.4px;
+    transition: transform var(--anim-mid), box-shadow var(--anim-mid), background var(--anim-mid);
+  }
+
+  .btn.primary {
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color:#fff; box-shadow: 0 10px 28px rgba(80,110,160,0.12); border: 1px solid rgba(255,255,255,0.04);
+  }
+  .btn.secondary {
+    background: transparent; color:var(--accent-2); border:1px solid rgba(80,110,160,0.08);
+    backdrop-filter: blur(6px);
+  }
+
+  .btn:focus{ outline: 3px solid rgba(100,140,200,0.14); transform: translateY(-3px); }
+  .btn:active{ transform: translateY(-1px); }
+
+  /* sheen effect on primary button */
+  .btn.primary::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background: linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.02) 100%);
+    mix-blend-mode: overlay;
+    opacity:0;
+    transition: opacity 480ms ease, transform 480ms ease;
+  }
+  .btn.primary:hover::after{ opacity:1; transform: translateX(6%); }
+
+  /* small pill */
+  .pill { display:inline-block; padding:.35rem .7rem; border-radius:999px; background: rgba(0,0,0,0.04); color:var(--muted); font-weight:700; font-size:.85rem; }
+
+  /* ==========================================================================
+     06 - TILT 3D CSS (clases) - JS se encarga de transformar .tilt-inner
+     ========================================================================== */
+  .tilt {
+    perspective: 1200px;
+  }
+  .tilt .tilt-inner {
+    transform-style: preserve-3d;
+    transition: transform var(--anim-mid);
+    will-change: transform;
+  }
+
+  /* ==========================================================================
+     07 - SKELETON / PLACEHOLDER (para cargas)
+     ========================================================================== */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.04) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1200ms linear infinite;
+    border-radius: 8px;
+  }
+  @keyframes shimmer { to { background-position: 200% 0; } }
+
+  /* ==========================================================================
+     08 - TOOLTIP (pure css) - usar data-tooltip attr
+     ========================================================================== */
+  [data-tooltip] { position: relative; }
+  [data-tooltip]:hover::after,
+  [data-tooltip]:focus::after {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  [data-tooltip]::after{
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 6px);
+    bottom: calc(100% + 8px);
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: .45rem .65rem;
+    border-radius:6px;
+    font-size:.82rem;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 180ms ease, transform 180ms ease;
+    white-space:nowrap;
+    z-index: 40;
+  }
+
+  /* ==========================================================================
+     09 - FOOTER
+     ========================================================================== */
+  footer.footer {
+    max-width: var(--container-max);
+    margin: 2.4rem auto;
+    padding: 1.2rem 1.6rem;
+    color: var(--muted);
+    text-align:center;
+    font-size: .95rem;
+  }
+
+  /* ==========================================================================
+     10 - PRINT STYLES (lite)
+     ========================================================================== */
+  @media print {
+    body { background: #fff; color: #000; }
+    header.header, footer.footer, .theme-toggle { display:none; }
+    main.grid { padding:0; }
+    .card { box-shadow: none; border: 1px solid #ddd; }
+  }
+
+  /* ==========================================================================
+     11 - TUNING RESPONSIVE
+     ========================================================================== */
+  @media (max-width: 900px){
+    header.header { padding: 1.2rem .8rem; }
+    .brand h1 { font-size: 1.1rem; }
+  }
+  @media (max-width: 420px){
+    .controls { gap: .4rem; }
+    .theme-toggle { width:40px; height:40px; }
+  }
+
+  /* ==========================================================================
+     12 - EXTRA UTILIDADES (para que puedas seguir añadiendo)
+     ========================================================================== */
+  .shadow-sm{ box-shadow: 0 6px 12px rgba(0,0,0,0.06) }
+  .muted{ color: var(--muted) }
+  .text-center{ text-align:center }
+  </style>
 </head>
 <body>
-    <h1>Mi PDF</h1>
-    <p>Haz clic en el siguiente enlace para ver el PDF:</p>
-    <a href="carta 2024.pdf" target="_blank">Abrir PDF</a>
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">HT</div>
+        <h1>SERVICIOS DEL HOTEL</h1>
+      </div>
 
+      <div class="controls" role="region" aria-label="Controles del panel">
+        <div id="currentTime" class="time" aria-live="polite">--:--</div>
+        <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Alternar tema">☀️</button>
+      </div>
+    </div>
+  </header>
 
-    <p>Haz clic en el siguiente enlace para ver el PDF:</p>
-    <a href="masaje español.pdf" target="_blank">Abrir PDF</a>
+  <!-- MAIN GRID -->
+  <main class="grid" role="main" aria-live="polite">
 
+    <!-- Transportes (6 cols) -->
+    <article class="card col-span-6 tilt" data-key="transportes" tabindex="0" aria-labelledby="h_transport">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7109caf9-3421-4581-8a58-66e15ca6ec65.png" alt="Servicios de transporte y tours">
+        </div>
+        <div class="card-body">
+          <h3 id="h_transport">Transportes y Tours</h3>
+          <p class="muted">Tarifas y opciones de traslado y tours locales.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://docs.google.com/spreadsheets/d/11Ajow6f2_oAs9GUpMSACMwx_TK7BmNzYZ-SdDuK_lew/edit?usp=sharing" target="_blank" rel="noopener" data-tooltip="Ver tarifas">Tarifas transporte</a>
+            <a class="btn secondary" href="https://docs.google.com/spreadsheets/d/1_tJus2Hks7fa9Y-fKyx7lzfGel7gN7LrgZDw2Xe_23M/edit?usp=sharing" target="_blank" rel="noopener" data-tooltip="Ver tours">Tours</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
-    <p>Haz clic en el siguiente enlace para ver el PDF:</p>
-    <a href="masaje ingles.pdf" target="_blank">Abrir PDF</a>
+    <!-- Cuatrimotos (4 cols) -->
+    <article class="card col-span-4 tilt" data-key="cuatrimotos" tabindex="0" aria-labelledby="h_cuatri">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/967a540d-0fa6-4a3f-8551-c5ad1c6427f0.png" alt="Cuatrimotos">
+        </div>
+        <div class="card-body">
+          <h3 id="h_cuatri">Cuatrimotos</h3>
+          <p class="muted">Aventuras guiadas en cuatrimoto.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://wa.me/51984528288" target="_blank" rel="noopener" data-tooltip="Enviar WhatsApp">WHATSAPP</a>
+            <a class="btn secondary" href="imag/2025 CUATRIMOTOS ACTUALIZADO.docx (3) (1).pdf" target="_blank" rel="noopener" data-tooltip="Descargar PDF">PDF</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
+    <!-- Mantenimiento (4 cols) -->
+    <article class="card col-span-4 tilt" data-key="mantenimiento" tabindex="0" aria-labelledby="h_mant">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b00d99a4-0829-464e-9a54-7fd5a20c9892.png" alt="Mantenimiento">
+        </div>
+        <div class="card-body">
+          <h3 id="h_mant">MANTENIMIENTO</h3>
+          <p class="muted">Reportes y contacto del equipo técnico.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://wa.me/51981515815" target="_blank" rel="noopener" data-tooltip="Contactar mantenimiento">WHATSAPP</a>
+          </div>
+        </div>
+      </div>
+    </article>
 
-    
+    <!-- Masajes (6 cols) -->
+    <article class="card col-span-6 tilt" data-key="masajes" tabindex="0" aria-labelledby="h_mas">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1786f708-da53-4302-ac36-cb2d99b19f88.png" alt="Masajes a la habitación">
+        </div>
+        <div class="card-body">
+          <h3 id="h_mas">Masajes a la Habitación</h3>
+          <p class="muted">Disfruta masajes relajantes en tu cuarto.</p>
+          <div class="actions">
+            <a class="btn secondary" href="imag/Masajes 2025 (2).pdf" target="_blank" rel="noopener">PDF</a>
+            <a class="btn primary" href="https://wa.me/51984627263" target="_blank" rel="noopener">WHATSAPP</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Pizzeria (6 cols) -->
+    <article class="card col-span-6 tilt" data-key="pizzeria" tabindex="0" aria-labelledby="h_piz">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d505745c-bdf6-47b3-a5af-a3f929ee6e4d.png" alt="Pizzeria Delivery">
+        </div>
+        <div class="card-body">
+          <h3 id="h_piz">Pizzeria Delivery</h3>
+          <p class="muted">Ordena tu pizza favorita al cuarto.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://wa.me/51974540570" target="_blank" rel="noopener">WHATSAPP</a>
+            <a class="btn secondary" href="imag/carta-pizza (1).pdf" target="_blank" rel="noopener">Carta PDF</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Asistencia médica (6 cols) -->
+    <article class="card col-span-6 tilt" data-key="medica" tabindex="0" aria-labelledby="h_med">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9702f7c7-fd31-4b7b-b756-aa415ba6a332.png" alt="Asistencia médica a domicilio">
+        </div>
+        <div class="card-body">
+          <h3 id="h_med">ASISTENCIA MÉDICA</h3>
+          <p class="muted">Contactos médicos disponibles 24/7.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://wa.me/51973370337" target="_blank" rel="noopener">1RA OPCIÓN</a>
+            <a class="btn secondary" href="https://wa.me/51991231508" target="_blank" rel="noopener">2DA OPCIÓN</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Añadir más (3 cols) -->
+    <article class="card col-span-3 tilt" data-key="otros" tabindex="0" aria-labelledby="h_oth">
+      <div class="accent" aria-hidden="true"></div>
+      <div class="tilt-inner card-head">
+        <div class="card-media">
+          <img loading="lazy" decoding="async" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/8f3893af-734e-416b-bb88-8c20be340373.png" alt="Más servicios">
+        </div>
+        <div class="card-body">
+          <h3 id="h_oth">AÑADIR MÁS SERVICIOS</h3>
+          <p class="muted">Solicita la incorporación de otro servicio.</p>
+          <div class="actions">
+            <button class="btn secondary" type="button" aria-label="Descargar PDF">PDF</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    © <span id="year"></span> Hotel · Panel de Servicios · Diseñado por Antonio
+  </footer>
+
+  <!-- ===========================
+       JS: FUNCIONALIDAD ROBUSTA
+       =========================== -->
+  <script>
+  (function(){
+    'use strict';
+
+    /* helpers */
+    const $ = (s, ctx=document) => ctx.querySelector(s);
+    const $$ = (s, ctx=document) => Array.from(ctx.querySelectorAll(s));
+
+    /* TIME */
+    function updateTime(){
+      const now = new Date();
+      const str = now.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit', hour12:false });
+      const el = $('#currentTime');
+      if(el) el.textContent = str;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    /* year */
+    const yearEl = $('#year');
+    if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+    /* THEME: persistencia + preferencia del sistema */
+    const THEME_KEY = 'hotel-dashboard-dark';
+    const themeBtn = $('#themeToggle');
+    const docEl = document.documentElement;
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(THEME_KEY)); } catch(e){ saved = null; }
+
+    function applyTheme(forceDark){
+      const isDark = typeof forceDark === 'boolean' ? forceDark : ( saved === null ? prefersDark : !!saved );
+      docEl.classList.toggle('dark-theme', isDark);
+      if(themeBtn){
+        themeBtn.setAttribute('aria-pressed', String(isDark));
+        themeBtn.textContent = isDark ? '🌙' : '☀️';
+      }
+      try { localStorage.setItem(THEME_KEY, JSON.stringify(isDark)); } catch(e){}
+    }
+    applyTheme();
+
+    if(themeBtn){
+      themeBtn.addEventListener('click', (e)=>{
+        const isDark = !document.documentElement.classList.contains('dark-theme');
+        applyTheme(isDark);
+        // tiny pulse
+        themeBtn.animate([{ transform:'scale(1)' }, { transform:'scale(1.06)' }, { transform:'scale(1)'}], { duration: 260, easing: 'cubic-bezier(.2,.9,.3,1)' });
+      });
+    }
+
+    /* REVEAL ON SCROLL (IntersectionObserver) */
+    const cards = $$('.card');
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(en => {
+          if(en.isIntersecting){
+            en.target.classList.add('is-visible');
+            // slight stagger for children
+            const delay = 80;
+            en.target.style.transitionDelay = (Array.from(cards).indexOf(en.target) * delay) + 'ms';
+            obs.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      cards.forEach(c => io.observe(c));
+    } else {
+      // fallback
+      cards.forEach(c => c.classList.add('is-visible'));
+    }
+
+    /* TILT 3D: mouse + touch + keyboard (respects prefers-reduced-motion) */
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!reduceMotion){
+      const TILT_MAX = 10; // grados
+      function bindTilt(card){
+        const inner = card.querySelector('.tilt-inner');
+        if(!inner) return;
+        function onMove(e){
+          const rect = card.getBoundingClientRect();
+          const clientX = e.clientX ?? (e.touches && e.touches[0] && e.touches[0].clientX) ?? (rect.left + rect.width/2);
+          const clientY = e.clientY ?? (e.touches && e.touches[0] && e.touches[0].clientY) ?? (rect.top + rect.height/2);
+          const px = (clientX - rect.left) / rect.width - 0.5; // -0.5 .. 0.5
+          const py = (clientY - rect.top) / rect.height - 0.5;
+          const rotY = px * TILT_MAX * -1;
+          const rotX = py * TILT_MAX;
+          inner.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateZ(6px)`;
+        }
+        function onLeave(){ inner.style.transform = ''; }
+        card.addEventListener('mousemove', onMove);
+        card.addEventListener('touchmove', onMove, { passive:true });
+        card.addEventListener('mouseleave', onLeave);
+        card.addEventListener('touchend', onLeave);
+        // keyboard: little pop on focus
+        card.addEventListener('focus', ()=> inner.style.transform = 'translateZ(6px) scale(1.006)');
+        card.addEventListener('blur', ()=> inner.style.transform = '');
+      }
+      cards.forEach(bindTilt);
+    }
+
+    /* IMAGE fallback for broken images */
+    $$('img').forEach(img => {
+      img.addEventListener('error', ()=> {
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="#eceff3" width="100%" height="100%"/><text x="50%" y="50%" fill="#9aa6b3" font-size="16" text-anchor="middle" dominant-baseline="middle">Imagen no disponible</text></svg>`
+        );
+      });
+    });
+
+    /* Keyboard: Enter on card opens first action */
+    cards.forEach(card => {
+      card.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter' || ev.key === ' '){
+          const first = card.querySelector('a,button');
+          if(first){ first.focus(); if(first.click) first.click(); }
+        }
+      });
+    });
+
+    /* Prevent accidental selection during tilt dragging on mobile */
+    document.addEventListener('touchmove', function(){ /* noop to allow passive listeners */ }, { passive:true });
+
+  })();
+  </script>
 </body>
 </html>
